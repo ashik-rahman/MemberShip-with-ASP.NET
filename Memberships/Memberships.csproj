@@ -204,6 +204,14 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\csharp-for-beginners.png" />
+    <Content Include="Content\Images\csharp-zip.png" />
+    <Content Include="Content\Images\laptop.jpg" />
+    <Content Include="Content\Images\pdf.png" />
+    <Content Include="Content\Images\unit-testing.png" />
+    <Content Include="Content\Images\video.png" />
+    <Content Include="Content\Logos\membership-icon-large.png" />
+    <Content Include="Content\Logos\membership-icon-small.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
