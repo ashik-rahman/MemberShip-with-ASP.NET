@@ -194,6 +194,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\UserSubscription.cs" />
+    <Compile Include="Entities\SubscriptionProduct.cs" />
+    <Compile Include="Entities\ProductItem.cs" />
+    <Compile Include="Entities\Subscription.cs" />
+    <Compile Include="Entities\ProductLinkText.cs" />
+    <Compile Include="Entities\ProductType.cs" />
+    <Compile Include="Entities\Product.cs" />
     <Compile Include="Entities\Part.cs" />
     <Compile Include="Entities\ItemType.cs" />
     <Compile Include="Entities\Section.cs" />
