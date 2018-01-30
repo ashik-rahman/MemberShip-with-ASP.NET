@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Memberships.Entities
@@ -14,6 +15,7 @@ namespace Memberships.Entities
         [MaxLength(2048)]
         public string Description { get; set; }
         [MaxLength(20)]
+        [DisplayName("Registration Code")]
         public string RegistrationCode { get; set; }
     }
 }
