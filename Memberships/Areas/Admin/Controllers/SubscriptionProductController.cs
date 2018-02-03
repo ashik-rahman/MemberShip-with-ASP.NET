@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using Memberships.Entities;
 using Memberships.Models;
+using Memberships.Areas.Admin.Extensions;
+using Memberships.Areas.Admin.Models;
 
 namespace Memberships.Areas.Admin.Controllers
 {
@@ -19,28 +21,33 @@ namespace Memberships.Areas.Admin.Controllers
         // GET: Admin/SubscriptionProduct
         public async Task<ActionResult> Index()
         {
-            return View(await db.SubscriptionProducts.ToListAsync());
+            return View(await db.SubscriptionProducts.Convert(db));
         }
 
         // GET: Admin/SubscriptionProduct/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int? subscriptionId, int? productId)
         {
-            if (id == null)
+            if (subscriptionId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubscriptionProduct subscriptionProduct = await db.SubscriptionProducts.FindAsync(id);
+            SubscriptionProduct subscriptionProduct = await GetSubscriptionProduct(subscriptionId, productId);
             if (subscriptionProduct == null)
             {
                 return HttpNotFound();
             }
-            return View(subscriptionProduct);
+            return View(await subscriptionProduct.Convert(db, false));
         }
 
         // GET: Admin/SubscriptionProduct/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            return View();
+            var model = new SubscriptionProductModel
+            {
+                Subscriptions = await db.Subscriptions.ToListAsync(),
+                Products = await db.Products.ToListAsync()
+            };
+            return View(model);
         }
 
         // POST: Admin/SubscriptionProduct/Create
@@ -61,18 +68,18 @@ namespace Memberships.Areas.Admin.Controllers
         }
 
         // GET: Admin/SubscriptionProduct/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? subscriptionId, int? productId)
         {
-            if (id == null)
+            if (subscriptionId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubscriptionProduct subscriptionProduct = await db.SubscriptionProducts.FindAsync(id);
+            SubscriptionProduct subscriptionProduct = await GetSubscriptionProduct(subscriptionId, productId);
             if (subscriptionProduct == null)
             {
                 return HttpNotFound();
             }
-            return View(subscriptionProduct);
+            return View(await subscriptionProduct.Convert(db));
         }
 
         // POST: Admin/SubscriptionProduct/Edit/5
@@ -80,43 +87,57 @@ namespace Memberships.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ProductId,SubscriptionId")] SubscriptionProduct subscriptionProduct)
+        public async Task<ActionResult> Edit(
+            [Bind(Include = "ProductId,SubscriptionId,OldProductId,OldSubscriptionId")]
+            SubscriptionProduct subscriptionProduct)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(subscriptionProduct).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                var canChange = await subscriptionProduct.CanChange(db);
+                if (canChange)
+                    await subscriptionProduct.Change(db);
                 return RedirectToAction("Index");
             }
             return View(subscriptionProduct);
         }
 
         // GET: Admin/SubscriptionProduct/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        public async Task<ActionResult> Delete(int? subscriptionId, int? productId)
         {
-            if (id == null)
+            if (subscriptionId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubscriptionProduct subscriptionProduct = await db.SubscriptionProducts.FindAsync(id);
+            SubscriptionProduct subscriptionProduct = await GetSubscriptionProduct(subscriptionId, productId);
             if (subscriptionProduct == null)
             {
                 return HttpNotFound();
             }
-            return View(subscriptionProduct);
+            return View(await subscriptionProduct.Convert(db, false));
         }
 
         // POST: Admin/SubscriptionProduct/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int subscriptionId, int productId)
         {
-            SubscriptionProduct subscriptionProduct = await db.SubscriptionProducts.FindAsync(id);
+            SubscriptionProduct subscriptionProduct = await GetSubscriptionProduct(subscriptionId,productId);
             db.SubscriptionProducts.Remove(subscriptionProduct);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-
+        private async Task<SubscriptionProduct> GetSubscriptionProduct(int? subscriptionId, int? productId)
+        {
+            try
+            {
+                int.TryParse(subscriptionId.ToString(), out int subscId);
+                int.TryParse(productId.ToString(), out int prdId);
+                var subscriptionProduct = await db.SubscriptionProducts.FirstOrDefaultAsync(
+                    sp => sp.ProductId.Equals(prdId) && sp.SubscriptionId.Equals(subscId));
+                return subscriptionProduct;
+            }
+            catch { return null; }
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
