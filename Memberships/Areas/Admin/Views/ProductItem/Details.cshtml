@@ -1,5 +1,5 @@
-﻿@model Memberships.Entities.ProductItem
-
+﻿@model Memberships.Areas.Admin.Models.ProductItemModel
+@using Memberships.Areas.Admin.Models;
 @{
     ViewBag.Title = "Details";
 }
@@ -7,12 +7,16 @@
 <h2>Details</h2>
 
 <div>
-    <h4>ProductItem</h4>
+    <h4>Product Item</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(m => m.ItemTitle)</dt>
+        <dd>@Html.DisplayFor(m => m.ItemTitle)</dd>
+        <dt>@Html.DisplayNameFor(m => m.ProductTitle)</dt>
+        <dd>@Html.DisplayFor(m => m.ProductTitle)</dd>
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.Partial("_EditButtonDetailPartial", new EditButtonModel {ItemId=Model.ItemId, ProductId=Model.ProductId })
+    @Html.Partial("_BackToListButtonPartial")
 </p>
