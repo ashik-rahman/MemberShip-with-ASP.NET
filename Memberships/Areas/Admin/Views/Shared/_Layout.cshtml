@@ -25,6 +25,9 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home", routeValues: new { Area = "" }, htmlAttributes: new {})</li>
+                    <li>@Html.ActionLink("About", "About", "Home", routeValues: new { Area = "" }, htmlAttributes: new { })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", routeValues: new { Area = "" }, htmlAttributes: new { })</li>
                     @Html.Partial("_AdminMenuPartial")
                 </ul>
                 @Html.Partial("_LoginPartial")
